@@ -1,16 +1,16 @@
+import pygame
 import numpy as np
 
 
-class Board:
+class Game:
     def __init__(self):
-        self.board = [[0, 0, 0, 0, 0, 0, 1],
-                      [0, 0, 0, 0, 0, 1, 0],
-                      [1, 0, 0, 1, 1, 0, 0],
-                      [2, 2, 0, 1, 0, 0, 0],
-                      [2, 1, 1, 2, 0, 0, 0],
-                      [1, 0, 2, 1, 2, 0, 0]]
+        self.player_num = 1
+        self.board = None
+
+        self.reset()
 
     def reset(self):
+        self.player_num = 1
         self.board = [[0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0],
@@ -18,13 +18,19 @@ class Board:
                       [0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0]]
 
-    def drop_piece(self, player_num, col):
+    def drop_piece(self, col):
         """Return true if piece was able to be dropped in desired column"""
         if self.board[0][col] == 0:
             for i in range(6):
                 if self.board[5-i][col] == 0:
-                    self.board[5 - i][col] = player_num
+                    self.board[5 - i][col] = self.player_num
                     break
+
+            if self.player_num == 1:
+                self.player_num = 2
+            else:
+                self.player_num = 1
+
             return True
         else:
             return False
@@ -65,14 +71,58 @@ class Board:
         for row in self.board:
             print(row)
 
+    def draw(self, screen):
+        BLUE = (0, 0, 255)
+        RED = (255, 0, 0)
+        WHITE = (255, 255, 255)
+
+        for i, row in enumerate(self.board):
+            for j, e in enumerate(row):
+                x = j * 100 + 50
+                y = i * 100 + 50
+                c = WHITE
+
+                if e == 1:
+                    c = BLUE
+                elif e == 2:
+                    c = RED
+
+                pygame.draw.circle(screen, c, (x, y), 30)
+
+
+def main():
+    SCREEN_WIDTH = 700
+    SCREEN_HEIGHT = 600
+    FPS = 60  # frame rate
+
+    clock = pygame.time.Clock()
+    pygame.init()
+
+    screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+
+    game = Game()
+
+    while main:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == ord("q"):
+                    pygame.quit()
+                if event.key == ord("r"):
+                    game.reset()
+                if 49 <= event.key and event.key <= 55:
+                    col = event.key - 49
+                    game.drop_piece(col)
+
+        screen.fill((230, 230, 230))
+
+        game.draw(screen)
+
+        # here we should probably check if there is a winner or not and
+        # draw player 1 wins or something
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
 
 if __name__ == "__main__":
-    board = Board()
-    # board.reset()
-
-    while True:
-        #board.drop_piece(1, col)
-        board.print()
-
-        print(board.check_win())
-        col = int(input())
+    main()
