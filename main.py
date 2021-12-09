@@ -6,7 +6,7 @@ class Game:
     def __init__(self):
         self.player_num = 1
         self.board = None
-
+        self.winner = 0
         self.reset()
 
     def reset(self):
@@ -36,11 +36,14 @@ class Game:
             return False
 
     def check_win(self):
+        # check tie
+        if 0 not in self.board[0]:
+            return 0
+
         # check rows
         for row in self.board:
             for i in range(4):
                 if len(set(row[i:i+4])) == 1 and row[i] != 0:
-                    print("win by row")
                     return row[i]
 
         # check columns
@@ -50,13 +53,11 @@ class Game:
         for row in temp:
             for i in range(3):
                 if len(set(row[i:i+4])) == 1 and row[i] != 0:
-                    print("win by column")
                     return row[i]
 
         # check diagonal
         temp = self.board.copy()
         temp = np.array(temp)
-        # 3 for row shift, 4 for col
         for i in range(3):
             temp_rows = temp[i:i + 4]
             for j in range(4):
@@ -66,6 +67,8 @@ class Game:
                     return square[0][0]
                 elif len(set(np.fliplr(square).diagonal())) == 1 and square[0][3] != 0:
                     return square[0][3]
+
+        return None
 
     def print(self):
         for row in self.board:
@@ -109,16 +112,21 @@ def main():
                     pygame.quit()
                 if event.key == ord("r"):
                     game.reset()
-                if 49 <= event.key and event.key <= 55:
+                if 49 <= event.key and event.key <= 55 and game.check_win() == None:
                     col = event.key - 49
                     game.drop_piece(col)
 
         screen.fill((230, 230, 230))
-
         game.draw(screen)
 
         # here we should probably check if there is a winner or not and
         # draw player 1 wins or something
+        # the return values are
+        # 0 = tie
+        # 1 = player 1 won
+        # 2 = player 2 won
+        # None = no one won
+        # game.check_win()
 
         pygame.display.flip()
         clock.tick(FPS)
