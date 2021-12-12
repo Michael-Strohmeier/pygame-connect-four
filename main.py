@@ -1,6 +1,18 @@
 import pygame
 import numpy as np
 
+global BLACK
+global WHITE
+global GREEN
+global RED
+global BLUE
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+
 
 class Game:
     def __init__(self):
@@ -75,10 +87,6 @@ class Game:
             print(row)
 
     def draw(self, screen):
-        BLUE = (0, 0, 255)
-        RED = (255, 0, 0)
-        WHITE = (255, 255, 255)
-
         for i, row in enumerate(self.board):
             for j, e in enumerate(row):
                 x = j * 100 + 50
@@ -92,6 +100,18 @@ class Game:
 
                 pygame.draw.circle(screen, c, (x, y), 30)
 
+    def display_winner(self, screen, pygame_font):
+        winner = self.check_win()
+        label = None
+        if winner == 1:
+            label = pygame_font.render("Player 1 wins!!", 1, BLUE)
+        elif winner == 2:
+            label = pygame_font.render("Player 2 wins!!", 1, RED)
+        elif winner == 0:
+            label = pygame_font.render("Tie", 1, BLACK)
+        if label:
+            screen.blit(label, (40, 10))
+
 
 def main():
     SCREEN_WIDTH = 700
@@ -100,6 +120,9 @@ def main():
 
     clock = pygame.time.Clock()
     pygame.init()
+    pygame.font.init()
+
+    pygame_font = pygame.font.SysFont('Comic Sans MS', 30)
 
     screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
@@ -117,7 +140,9 @@ def main():
                     game.drop_piece(col)
 
         screen.fill((230, 230, 230))
+
         game.draw(screen)
+        game.display_winner(screen, pygame_font)
 
         # here we should probably check if there is a winner or not and
         # draw player 1 wins or something
