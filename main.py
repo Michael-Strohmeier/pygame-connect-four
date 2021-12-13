@@ -139,19 +139,10 @@ def main():
                     col = event.key - 49
                     game.drop_piece(col)
 
-        screen.fill((230, 230, 230))
+        screen.fill((150, 150, 255))
 
         game.draw(screen)
         game.display_winner(screen, pygame_font)
-
-        # here we should probably check if there is a winner or not and
-        # draw player 1 wins or something
-        # the return values are
-        # 0 = tie
-        # 1 = player 1 won
-        # 2 = player 2 won
-        # None = no one won
-        # game.check_win()
 
         pygame.display.flip()
         clock.tick(FPS)
